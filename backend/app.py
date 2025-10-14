@@ -243,6 +243,8 @@ status_thread.daemon = True
 status_thread.start()
 
 if __name__ == '__main__':
-    print("Server is running on http://localhost:5000")
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    print(f"Server is running on port {port}")
+    socketio.run(app, debug=debug, host='0.0.0.0', port=port)
   

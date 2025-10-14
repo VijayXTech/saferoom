@@ -290,26 +290,28 @@ function Chat() {
         </div>
       </header>
       <div className="chat-box" id="chat-box" ref={chatBoxRef}>
-        {messages.map((msg, index) => (
-          <div key={`msg-${index}`} className="message-container">
-            <div className="message">
-              {msg.type === 'image' ? (
-                <div className="text">
-                  <button
-                    className="view-button"
-                    onClick={() => openModal(msg.image_data, msg.filename, msg.mime_type)}
-                  >
-                    View Image
-                  </button>
-                </div>
-              ) : (
-                <div className="text">{msg.message}</div>
-              )}
+        {messages.map((msg, index) => {
+          const isOwnMessage = msg.username === username;
+          return (
+            <div key={`msg-${index}`} className={`message-container ${isOwnMessage ? 'own-message' : 'other-message'}`}>
+              <div className="message">
+                {msg.type === 'image' ? (
+                  <div className="text">
+                    <button
+                      className="view-button"
+                      onClick={() => openModal(msg.image_data, msg.filename, msg.mime_type)}
+                    >
+                      View Image
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text">{msg.message}</div>
+                )}
+              </div>
+              <div className="username">{msg.username} • {formatTimestamp(msg.timestamp)}</div>
             </div>
-            <div className="username">{msg.username} • {formatTimestamp(msg.timestamp)}</div>
-            <div className="timestamp">{formatTimestamp(msg.timestamp)}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="message-box">
         <input

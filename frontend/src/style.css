@@ -442,7 +442,16 @@ header p {
     display: flex;
     flex-direction: column;
     width: 100%;
+    margin-bottom: clamp(8px, 1.5vh, 12px);
     animation: fadeInUp 0.3s ease-out;
+}
+
+.message-container.own-message {
+    align-items: flex-end;
+}
+
+.message-container.other-message {
+    align-items: flex-start;
 }
 
 @keyframes fadeInUp {
@@ -457,43 +466,58 @@ header p {
 }
 
 .message {
-    padding: clamp(12px, 2.5vw, 18px);
-    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    padding: clamp(10px, 2vw, 14px) clamp(12px, 2.5vw, 16px);
     border-radius: clamp(12px, 2.5vw, 18px);
-    border: 1px solid rgba(0, 255, 0, 0.2);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     word-wrap: break-word;
     white-space: pre-wrap;
     position: relative;
-    overflow: hidden;
+    max-width: min(75%, 400px);
+    min-width: clamp(80px, 15vw, 120px);
 }
 
-.message::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    background: linear-gradient(to bottom, #00ff00, #4DB6AC);
-    border-radius: 0 3px 3px 0;
+.own-message .message {
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-bottom-right-radius: clamp(4px, 1vw, 6px);
+}
+
+.other-message .message {
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    border: 1px solid rgba(77, 182, 172, 0.3);
+    border-bottom-left-radius: clamp(4px, 1vw, 6px);
 }
 
 .message .text {
-    color: #e0e0e0;
-    font-size: clamp(14px, 3vw, 16px);
+    font-size: clamp(13px, 2.8vw, 15px);
     line-height: 1.4;
     margin: 0;
-    padding-left: 8px;
+}
+
+.own-message .message .text {
+    color: #00ff00;
+}
+
+.other-message .message .text {
+    color: #e0e0e0;
 }
 
 .username {
-    font-size: clamp(11px, 2.2vw, 13px);
-    color: #4DB6AC;
-    margin: clamp(6px, 1.2vh, 8px) 0 0 8px;
+    font-size: clamp(10px, 2vw, 12px);
+    margin: clamp(4px, 0.8vh, 6px) clamp(8px, 1.5vw, 12px) 0;
     font-weight: 500;
-    opacity: 0.8;
+    opacity: 0.7;
+}
+
+.own-message .username {
+    color: #00ff00;
+    text-align: right;
+}
+
+.other-message .username {
+    color: #4DB6AC;
+    text-align: left;
 }
 
 .message-input {
@@ -593,8 +617,8 @@ header p {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 95vw;
-    max-height: 95vh;
+    max-width: 90vw;
+    max-height: 75vh;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -629,12 +653,19 @@ header p {
 }
 
 #caption {
-    margin: auto;
-    display: block;
-    text-align: center;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     color: #00ff00;
-    font-size: 18px;
-    padding: 10px 0;
+    font-size: clamp(14px, 3vw, 18px);
+    background: rgba(0, 0, 0, 0.8);
+    padding: clamp(8px, 1.5vh, 12px) clamp(16px, 3vw, 20px);
+    border-radius: clamp(8px, 1.5vw, 12px);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    max-width: 90%;
+    word-wrap: break-word;
 }
 
 .status-message {
@@ -648,19 +679,20 @@ header p {
 }
 
 .message .view-button {
-    padding: 5px 10px;
-    background-color: #00ff00;
-    color: #000000;
+    padding: clamp(6px, 1.2vh, 8px) clamp(12px, 2.5vw, 16px);
     border: none;
-    border-radius: 8px;
+    border-radius: clamp(6px, 1.2vw, 10px);
     cursor: pointer;
-    font-size: 14px;
-    margin-left: 10px;
+    font-size: clamp(11px, 2.2vw, 13px);
+    font-weight: 600;
     text-align: center;
+    transition: all 0.3s ease;
+    background: #00ff00;
+    color: #000000;
 }
 
-.message .view-button:hover {
-    background-color: #009900;
+.view-button:hover {
+    background: #00cc00;
 }
 
 .error-message {
@@ -684,10 +716,10 @@ header p {
 /* Toast Notification Styles */
 .chat-container .toast-container {
     position: absolute;
-    top: 60px; /* Below the header (height: 50px) with a 10px gap */
+    top: 60px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10; /* Above chat-box and message-box, below image-modal (z-index: 1) */
+    z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -997,8 +1029,8 @@ header p {
 /* Chat Screen Responsive */
 @media screen and (max-width: 480px) {
     .chat-container {
-        height: 55vh;
-        max-height: 55vh;
+        height: 55vh !important;
+        max-height: 55vh !important;
         overflow: hidden;
     }
     
@@ -1030,27 +1062,71 @@ header p {
     }
     
     .chat-box {
-        padding: clamp(6px, 1vw, 10px);
-        gap: clamp(4px, 0.8vh, 6px);
-        height: calc(55vh - clamp(100px, 20vh, 140px));
-        max-height: calc(55vh - clamp(100px, 20vh, 140px));
+        padding: clamp(8px, 2vw, 12px) !important;
+        gap: clamp(6px, 1vh, 10px) !important;
+        height: auto !important;
+        max-height: none !important;
         overflow-y: auto;
     }
     
+    .message-container {
+        margin-bottom: clamp(8px, 1.5vh, 12px) !important;
+        width: 100% !important;
+    }
+    
+    .message-container.own-message {
+        align-items: flex-end !important;
+    }
+    
+    .message-container.other-message {
+        align-items: flex-start !important;
+    }
+    
     .message {
-        padding: clamp(6px, 1.5vw, 10px);
-        border-radius: clamp(6px, 1.5vw, 10px);
-        margin-bottom: clamp(4px, 0.8vh, 6px);
+        padding: clamp(10px, 2vw, 14px) clamp(12px, 2.5vw, 16px) !important;
+        border-radius: clamp(12px, 2.5vw, 16px) !important;
+        max-width: 80% !important;
+        min-width: 100px !important;
+    }
+    
+    .own-message .message {
+        border-bottom-right-radius: 4px !important;
+        background: linear-gradient(145deg, #1a4d1a, #0d330d) !important;
+        border: 1px solid rgba(0, 255, 0, 0.4) !important;
+    }
+    
+    .other-message .message {
+        border-bottom-left-radius: 4px !important;
+        background: linear-gradient(145deg, #2a2a2a, #1a1a1a) !important;
+        border: 1px solid rgba(77, 182, 172, 0.4) !important;
     }
     
     .message .text {
-        font-size: clamp(11px, 2.5vw, 13px);
-        line-height: 1.3;
+        font-size: clamp(13px, 2.8vw, 15px) !important;
+        line-height: 1.4 !important;
+    }
+    
+    .own-message .message .text {
+        color: #00ff00 !important;
+    }
+    
+    .other-message .message .text {
+        color: #e0e0e0 !important;
     }
     
     .username {
-        font-size: clamp(8px, 1.8vw, 10px);
-        margin: clamp(2px, 0.5vh, 4px) 0 0 4px;
+        font-size: clamp(9px, 1.8vw, 11px) !important;
+        margin: clamp(4px, 0.8vh, 6px) clamp(8px, 1.5vw, 12px) 0 !important;
+    }
+    
+    .own-message .username {
+        text-align: right !important;
+        color: #00ff00 !important;
+    }
+    
+    .other-message .username {
+        text-align: left !important;
+        color: #4DB6AC !important;
     }
     
     .message-box {
@@ -1077,8 +1153,8 @@ header p {
     }
     
     .modal-content {
-        max-width: 98vw;
-        max-height: 98vh;
+        max-width: 95vw;
+        max-height: 70vh;
         border-radius: 6px;
     }
     
@@ -1088,6 +1164,13 @@ header p {
         font-size: clamp(24px, 5vw, 35px);
         width: clamp(35px, 7vw, 45px);
         height: clamp(35px, 7vw, 45px);
+    }
+    
+    #caption {
+        bottom: 10px;
+        font-size: clamp(12px, 2.5vw, 14px);
+        padding: clamp(6px, 1vh, 8px) clamp(12px, 2.5vw, 16px);
+        max-width: 95%;
     }
     
     .chat-container .toast {

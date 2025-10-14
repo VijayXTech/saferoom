@@ -7,7 +7,7 @@ function Landing() {
   return (
     <div className="landing-container">
       <div className="landing-content">
-        <h1 className="landing-title">SAFE ROOM</h1>
+        <h1 className="landing-title">SAFEROOM</h1>
         <p className="landing-subtitle">Secure Real-Time Communication Platform</p>
         
         <div className="options-container">
