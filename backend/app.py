@@ -37,7 +37,18 @@ def serve_react():
 
 @app.route('/<path:path>')
 def serve_static(path):
-    return send_from_directory(app.static_folder, path)
+    # Check if it's a static file (has extension)
+    if '.' in path:
+        try:
+            return send_from_directory(app.static_folder, path)
+        except:
+            return send_from_directory(app.static_folder, 'index.html')
+    # For all other routes (React routes), serve index.html
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.errorhandler(404)
+def not_found(error):
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/check_username', methods=['POST'])
 def check_username():

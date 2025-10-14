@@ -4,8 +4,28 @@ import io from 'socket.io-client';
 
 function Chat() {
   const { state } = useLocation();
-  const { username, securityCode } = state || {};
   const navigate = useNavigate();
+  
+  // Try to get credentials from state or sessionStorage
+  const getCredentials = () => {
+    if (state?.username && state?.securityCode) {
+      return { username: state.username, securityCode: state.securityCode };
+    }
+    
+    const stored = sessionStorage.getItem('chatCredentials');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        return { username: parsed.username, securityCode: parsed.securityCode };
+      } catch (e) {
+        sessionStorage.removeItem('chatCredentials');
+      }
+    }
+    
+    return { username: null, securityCode: null };
+  };
+  
+  const { username, securityCode } = getCredentials();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [statusMessages, setStatusMessages] = useState([]);
@@ -25,7 +45,7 @@ function Chat() {
 
   useEffect(() => {
     if (!username || !securityCode) {
-      navigate('/');
+      navigate('/', { replace: true });
       return;
     }
 
@@ -57,18 +77,19 @@ function Chat() {
     socketRef.current.on('username_error', (data) => {
       if (data.block) {
         alert(data.message);
-        navigate('/');
+        sessionStorage.removeItem('chatCredentials');
+        navigate('/', { replace: true });
       }
     });
 
     socketRef.current.on('message', (data) => {
       setMessages((prev) => [...prev, data]);
-      scrollToBottom();
+      setTimeout(scrollToBottom, 100);
     });
 
     socketRef.current.on('image', (data) => {
       setMessages((prev) => [...prev, { ...data, type: 'image' }]);
-      scrollToBottom();
+      setTimeout(scrollToBottom, 100);
     });
 
     socketRef.current.on('user_status', (data) => {
@@ -146,17 +167,21 @@ function Chat() {
       window.removeEventListener('focus', handleFocus);
       window.removeEventListener('blur', handleBlur);
       clearInterval(interval);
+      // Clear credentials on component unmount
+      sessionStorage.removeItem('chatCredentials');
     };
   }, [username, securityCode, navigate]);
 
   const scrollToBottom = () => {
     if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTo({
-        top: chatBoxRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   };
+
+  // Auto-scroll when messages change
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -168,7 +193,7 @@ function Chat() {
         security_code: securityCode,
       });
       setMessage('');
-      scrollToBottom();
+      setTimeout(scrollToBottom, 50);
     }
   };
 
@@ -247,8 +272,22 @@ function Chat() {
   return (
     <div className="chat-container">
       <header>
-        <h1>🇸🇦🇫🇪 🇷🇴🇴🇲</h1>
-        <p id="username-display">{username}</p>
+        <div className="header-content">
+          <h1>SAFE ROOM</h1>
+          <div className="header-right">
+            <p id="username-display">{username}</p>
+            <button 
+              className="logout-button"
+              onClick={() => {
+                sessionStorage.removeItem('chatCredentials');
+                navigate('/', { replace: true });
+              }}
+              title="Leave Chat"
+            >
+              ✖
+            </button>
+          </div>
+        </div>
       </header>
       <div className="chat-box" id="chat-box" ref={chatBoxRef}>
         {messages.map((msg, index) => (
